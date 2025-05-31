@@ -1,0 +1,37 @@
+# Mac system files
+.DS_Store
+**/.DS_Store
+
+# Environments
+.env
+.python-version
+.venv
+env/
+venv/
+.vscode/
+
+# Project files
+.virtual_documents/
+project_files/
+
+# Database
+chroma_db/
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]     # covers .pyc, .pyo, and .pyd files
+*$py.class
+.Python
+.ipynb_checkpoints
+
+# Python packaging
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Testing
+.coverage
+.pytest_cache/
+logs/
