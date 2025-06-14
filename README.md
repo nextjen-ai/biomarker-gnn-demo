@@ -7,33 +7,67 @@ A demonstration project for predicting disease risks using biomarker data and Gr
 This demo project shows how to:
 1. Process biomarker data from the UCI Heart Disease dataset
 2. Build a knowledge graph connecting biomarkers and diseases
-3. Visualize the relationships between biomarkers and diseases
-4. (Coming soon) Train a GNN to predict disease risks
+3. Train a GNN to predict disease risks
+4. Make predictions for new patients
 
-## Current Progress
+## Features
 
-### Completed
-- ✅ Data processing pipeline for heart disease dataset
-- ✅ Knowledge graph construction
-- ✅ Graph visualization
-- ✅ Node feature analysis
+### Data Processing
+- ✅ Process heart disease dataset
+- ✅ Extract relevant biomarkers
+- ✅ Normalize and prepare data for GNN
 
-### In Progress
-- 🔄 GNN model development
-- 🔄 Training pipeline
-- 🔄 Prediction system
+### Knowledge Graph
+- ✅ Build graph connecting biomarkers and diseases
+- ✅ Calculate edge weights based on correlations
+- ✅ Store node features and graph structure
 
-## Setup
+### GNN Model
+- ✅ Implement graph neural network architecture
+- ✅ Train model to predict disease risks
+- ✅ Evaluate model performance
+- ✅ Save trained model for inference
 
-Simply run:
+### Inference
+- ✅ Load trained model
+- ✅ Process new patient data
+- ✅ Predict disease risks
+- ✅ Output risk percentages
+
+## Setup and Usage
+
+1. Create and activate virtual environment:
 ```bash
 uv sync
 ```
 
-This will:
-- Create a virtual environment
-- Install all dependencies
-- Create a lockfile for reproducibility
+2. Run the pipeline in sequence:
+
+   a. Process the data:
+   ```bash
+   python src/data_processing.py
+   ```
+   This will download and process the heart disease dataset.
+
+   b. Build the knowledge graph:
+   ```bash
+   python src/graph_builder.py
+   ```
+   This creates the graph structure and node features.
+
+   c. Train the GNN model:
+   ```bash
+   python src/gnn_model.py
+   ```
+   This trains the model and saves it for inference.
+
+   d. Make predictions for a new patient:
+   ```bash
+   python src/inference.py
+   ```
+   This loads the trained model and makes predictions.
+
+Note: Each step must be run in order as they depend on the output of the previous step.
 
 ## Project Structure
 
@@ -41,30 +75,45 @@ This will:
 .
 ├── data/                      # Data files
 │   ├── heart_disease.csv      # Original dataset
-│   └── processed/             # Processed data files
+│   ├── knowledge_graph.pkl    # Built knowledge graph
+│   ├── node_features.csv      # Node feature data
+│   └── gnn_model.pt           # Trained GNN model
 ├── src/                       # Source code
 │   ├── config.py              # Configuration
 │   ├── data_processing.py     # Data processing pipeline
-│   └── graph_builder.py       # Knowledge graph construction
-└── pyproject.toml     # Project configuration
+│   ├── graph_builder.py       # Knowledge graph construction
+│   ├── gnn_model.py           # GNN model and training
+│   └── inference.py           # Inference for new patients
+└── pyproject.toml             # Project configuration
 ```
 
-## Next Steps
+## Biomarkers and Diseases
 
-1. GNN Model Development
-   - Implement graph neural network architecture
-   - Add node and edge feature processing
-   - Set up training pipeline
+The model works with the following biomarkers:
+- trestbps (resting blood pressure)
+- chol (serum cholesterol)
+- thalach (maximum heart rate)
+- oldpeak (ST depression)
 
-2. Training and Evaluation
-   - Train the model on the knowledge graph
-   - Implement evaluation metrics
-   - Add cross-validation
+And predicts risks for:
+- Heart disease
+- Hypertension
+- High cholesterol
+- Angina
 
-3. Prediction System
-   - Create prediction interface
-   - Add confidence scoring
-   - Implement visualization of predictions
+## Making Predictions
+
+To make predictions for a new patient, provide their biomarker values:
+```python
+patient_data = {
+    'trestbps': 145,  # resting blood pressure
+    'chol': 250,      # serum cholesterol
+    'thalach': 150,   # maximum heart rate
+    'oldpeak': 1.5    # ST depression
+}
+```
+
+The model will output risk percentages for each disease.
 
 ## Data Sources
 
@@ -72,19 +121,6 @@ This will:
   - Contains biomarker measurements
   - Includes disease presence/absence
   - Clean, processed data
-
-## Visualization
-
-The project includes two types of visualizations:
-1. Knowledge Graph Visualization
-   - Shows relationships between biomarkers and diseases
-   - Edge weights indicate relationship strength
-   - Different colors for different node types
-
-2. Node Feature Analysis
-   - Statistical properties of biomarkers
-   - Disease prevalence and severity
-   - Feature importance analysis
 
 ## Contributing
 
