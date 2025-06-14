@@ -1,0 +1,5 @@
+id,type,name
+heart_disease,disease,heart_disease
+angina,disease,angina
+hypertension,disease,hypertension
+high_cholesterol,disease,high_cholesterol

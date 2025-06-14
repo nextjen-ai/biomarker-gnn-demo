@@ -1,0 +1,17 @@
+source,target,type,confidence
+trestbps,heart_disease,associated_with,0.15775407626368732
+trestbps,angina,associated_with,0.15775407626368732
+trestbps,hypertension,associated_with,0.15775407626368732
+trestbps,high_cholesterol,associated_with,0.15775407626368732
+chol,heart_disease,associated_with,0.07090875545132247
+chol,angina,associated_with,0.07090875545132247
+chol,hypertension,associated_with,0.07090875545132247
+chol,high_cholesterol,associated_with,0.07090875545132247
+thalach,heart_disease,associated_with,0.4150404617350781
+thalach,angina,associated_with,0.4150404617350781
+thalach,hypertension,associated_with,0.4150404617350781
+thalach,high_cholesterol,associated_with,0.4150404617350781
+oldpeak,heart_disease,associated_with,0.504091973033799
+oldpeak,angina,associated_with,0.504091973033799
+oldpeak,hypertension,associated_with,0.504091973033799
+oldpeak,high_cholesterol,associated_with,0.504091973033799

@@ -23,7 +23,7 @@ This demo project shows how to:
 - ✅ Store node features and graph structure
 
 ### GNN Model
-- ✅ Implement graph neural network architecture
+- ✅ Implement graph neural network (GCN) architecture
 - ✅ Train model to predict disease risks
 - ✅ Evaluate model performance
 - ✅ Save trained model for inference
@@ -76,7 +76,7 @@ Note: Each step must be run in order as they depend on the output of the previou
 ├── data/                      # Data files
 │   ├── heart_disease.csv      # Original dataset
 │   ├── knowledge_graph.pkl    # Built knowledge graph
-│   ├── node_features.csv      # Node feature data
+│   ├── node_features.csv      # Generated node feature data
 │   └── gnn_model.pt           # Trained GNN model
 ├── src/                       # Source code
 │   ├── config.py              # Configuration
