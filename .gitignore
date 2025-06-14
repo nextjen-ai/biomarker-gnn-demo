@@ -19,17 +19,35 @@ chroma_db/
 
 # Python
 __pycache__/
-**/__pycache__/
-*.py[cod]     # covers .pyc, .pyo, and .pyd files
+*.py[cod]
 *$py.class
+*.so
 .Python
-.ipynb_checkpoints
+.env
+.venv
+env/
+venv/
+ENV/
 
-# Python packaging
-*.egg-info/
-*.egg
+# Distribution / packaging
 dist/
 build/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+data/*.csv
+data/*.pkl
+data/*.png
+!data/heart_disease.csv  # Keep the original data file
+
+# Jupyter Notebook
+.ipynb_checkpoints
 
 # Testing
 .coverage
