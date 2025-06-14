@@ -231,7 +231,7 @@ def train_gnn(model, x, edge_index, edge_weights, epochs=100, lr=0.001):
     return model
 
 def evaluate_gnn(model, x, edge_index, edge_weights, edge_names, save_dir='data/evaluation'):
-    """Evaluate the model and visualize results"""
+    """Evaluate the model and return metrics"""
     model.eval()
     with torch.no_grad():
         # Get predictions
@@ -255,10 +255,6 @@ def evaluate_gnn(model, x, edge_index, edge_weights, edge_names, save_dir='data/
         
         # Create evaluation directory if it doesn't exist
         os.makedirs(save_dir, exist_ok=True)
-        
-        # Plot and save visualizations
-        from visualization import plot_prediction_analysis
-        plot_prediction_analysis(y_true, y_pred, edge_names, save_dir=save_dir)
         
         # Save node embeddings for later analysis
         np.save(os.path.join(save_dir, 'node_embeddings.npy'), node_embeddings.numpy())
