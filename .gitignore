@@ -13,8 +13,8 @@ venv/
 # Project files
 .virtual_documents/
 project_files/
-data/*.png
-data/evaluation/
+data/*
+!data/.gitkeep
 
 # Database
 chroma_db/

@@ -74,9 +74,13 @@ Note: Each step must be run in order as they depend on the output of the previou
 ```
 .
 ├── data/                      # Data files
+│   ├── biomarker_nodes.csv    # Generated node data
+│   ├── disease_nodes.csv      # Generated node data
 │   ├── heart_disease.csv      # Original dataset
-│   ├── knowledge_graph.pkl    # Built knowledge graph
 │   ├── node_features.csv      # Generated node feature data
+│   ├── processed_heart_disease.csv      # Generated data
+│   ├── relationships.csv      # Generated data
+│   ├── knowledge_graph.pkl    # Built knowledge graph
 │   └── gnn_model.pt           # Trained GNN model
 ├── src/                       # Source code
 │   ├── config.py              # Configuration
