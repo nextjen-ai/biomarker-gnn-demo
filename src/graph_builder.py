@@ -139,16 +139,15 @@ def build_knowledge_graph():
         'trestbps',  # resting blood pressure
         'chol',      # serum cholesterol
         'thalach',   # maximum heart rate
-        'oldpeak'    # ST depression
+        'oldpeak',   # ST depression
+        'fbs',       # fasting blood sugar > 120 mg/dl
+        'exang',     # exercise induced angina
+        'slope',     # slope of peak exercise ST segment
+        'ca'         # number of major vessels colored by flourosopy
     ]
     
-    # Add disease nodes
-    diseases = [
-        'heart_disease',
-        'angina',
-        'hypertension',
-        'high_cholesterol'
-    ]
+    # Add disease node
+    diseases = ['heart_disease']
     
     # Add nodes to graph
     for biomarker in biomarkers:
@@ -169,14 +168,6 @@ def build_knowledge_graph():
             weight=correlation,
             type='associated_with'
         )
-        
-        # Add edges to other diseases based on biomarker characteristics
-        if biomarker == 'trestbps':
-            G.add_edge(biomarker, 'hypertension', weight=0.8, type='associated_with')
-        elif biomarker == 'chol':
-            G.add_edge(biomarker, 'high_cholesterol', weight=0.9, type='associated_with')
-        elif biomarker == 'thalach':
-            G.add_edge(biomarker, 'angina', weight=0.7, type='associated_with')
     
     # Save graph structure using pickle
     with open(os.path.join(DATA_DIR, 'knowledge_graph.pkl'), 'wb') as f:
@@ -196,16 +187,10 @@ def build_knowledge_graph():
     
     # Add disease features
     for disease in diseases:
-        if disease == 'heart_disease':
-            node_features[disease] = {
-                'prevalence': processed_data['target'].mean(),
-                'severity': 1.0
-            }
-        else:
-            node_features[disease] = {
-                'prevalence': 0.5,  # Placeholder
-                'severity': 0.7     # Placeholder
-            }
+        node_features[disease] = {
+            'prevalence': processed_data['target'].mean(),
+            'severity': 1.0
+        }
     
     # Save node features
     pd.DataFrame(node_features).to_csv(

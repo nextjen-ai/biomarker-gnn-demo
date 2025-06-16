@@ -72,16 +72,15 @@ def create_initial_knowledge_graph(processed_data):
         'trestbps',  # resting blood pressure
         'chol',      # serum cholesterol
         'thalach',   # maximum heart rate
-        'oldpeak'    # ST depression
+        'oldpeak',   # ST depression
+        'fbs',       # fasting blood sugar > 120 mg/dl
+        'exang',     # exercise induced angina
+        'slope',     # slope of peak exercise ST segment
+        'ca'         # number of major vessels colored by flourosopy
     ]
     
-    # Define diseases/conditions
-    diseases = [
-        'heart_disease',
-        'angina',
-        'hypertension',
-        'high_cholesterol'
-    ]
+    # Only one disease: heart disease
+    diseases = ['heart_disease']
     
     # Create nodes for biomarkers
     biomarker_nodes = pd.DataFrame({
@@ -90,7 +89,7 @@ def create_initial_knowledge_graph(processed_data):
         'name': biomarkers
     })
     
-    # Create nodes for diseases
+    # Create nodes for disease
     disease_nodes = pd.DataFrame({
         'id': diseases,
         'type': 'disease',
@@ -108,15 +107,14 @@ def create_initial_knowledge_graph(processed_data):
     correlations = processed_data[biomarkers + ['target']].corr()['target']
     
     for biomarker in biomarkers:
-        for disease in diseases:
-            # Use correlation as confidence score
-            confidence = abs(correlations[biomarker])
-            relationships.append({
-                'source': biomarker,
-                'target': disease,
-                'type': 'associated_with',
-                'confidence': confidence
-            })
+        # Use correlation as confidence score
+        confidence = abs(correlations[biomarker])
+        relationships.append({
+            'source': biomarker,
+            'target': 'heart_disease',
+            'type': 'associated_with',
+            'confidence': confidence
+        })
     
     # Save relationships
     pd.DataFrame(relationships).to_csv(
