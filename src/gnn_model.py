@@ -3,6 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv, global_mean_pool
 import numpy as np
+import networkx as nx
+import os
+import pickle
+import pandas as pd
 
 class GNNModel(nn.Module):
     def __init__(self, num_node_features, num_classes=1):
@@ -34,73 +38,74 @@ class GNNModel(nn.Module):
         x = self.classifier(x)
         return x
 
-def prepare_graph_data(patient_data, heart_disease_present):
+def load_knowledge_graph(data_dir):
+    """Load the knowledge graph and node features"""
+    # Load graph structure
+    with open(os.path.join(data_dir, 'knowledge_graph.pkl'), 'rb') as f:
+        G = pickle.load(f)
+    
+    # Load node features
+    node_features = pd.read_csv(os.path.join(data_dir, 'node_features.csv'), index_col=0)
+    
+    return G, node_features
+
+def prepare_graph_data(patient_data, heart_disease_present, G, node_features):
     """
-    Prepare graph data for a single patient
+    Prepare graph data for a single patient using the knowledge graph structure
     
     Args:
         patient_data (dict): Dictionary containing biomarker values
         heart_disease_present (bool): Whether the patient has heart disease
+        G (nx.DiGraph): Knowledge graph
+        node_features (pd.DataFrame): Node features from knowledge graph
         
     Returns:
         tuple: (node_features, edge_index, edge_weight)
     """
-    # Create node features (just the normalized biomarker values)
-    node_features = []
-    for biomarker in ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 
-                      'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']:
-        value = patient_data[biomarker]
-        # Normalize to [0,1] range based on typical ranges for each biomarker
-        if biomarker == 'age':
-            normalized = value / 100.0  # Assuming max age of 100
-        elif biomarker == 'sex':
-            normalized = value  # Already binary
-        elif biomarker == 'cp':
-            normalized = value / 3.0  # 0-3 range
-        elif biomarker == 'trestbps':
-            normalized = value / 200.0  # Typical range 90-200
-        elif biomarker == 'chol':
-            normalized = value / 600.0  # Typical range 100-600
-        elif biomarker == 'fbs':
-            normalized = value  # Already binary
-        elif biomarker == 'restecg':
-            normalized = value / 2.0  # 0-2 range
-        elif biomarker == 'thalach':
-            normalized = value / 250.0  # Typical range 60-250
-        elif biomarker == 'exang':
-            normalized = value  # Already binary
-        elif biomarker == 'oldpeak':
-            normalized = value / 6.0  # Typical range 0-6
-        elif biomarker == 'slope':
-            normalized = value / 2.0  # 0-2 range
-        elif biomarker == 'ca':
-            normalized = value / 3.0  # 0-3 range
-        elif biomarker == 'thal':
-            normalized = value / 3.0  # 0-3 range
+    # Create node features using knowledge graph features
+    node_feature_list = []
+    for biomarker in G.nodes():
+        if G.nodes[biomarker]['type'] == 'biomarker':
+            # Get the biomarker value
+            value = patient_data[biomarker]
             
-        node_features.append(normalized)
+            # Normalize using knowledge graph statistics
+            stats = node_features[biomarker]
+            normalized = (value - stats['min']) / (stats['max'] - stats['min'])
+            
+            # Add statistical features
+            node_feature_list.extend([
+                normalized,
+                stats['mean'],
+                stats['std']
+            ])
     
-    # Add heart disease node feature (0 or 1)
-    node_features.append(float(heart_disease_present))
+    # Add heart disease node features
+    disease_stats = node_features['heart_disease']
+    node_feature_list.extend([
+        float(heart_disease_present),
+        disease_stats['prevalence'],
+        disease_stats['severity']
+    ])
     
-    # Convert to tensor of shape [num_nodes, 1]
-    node_features = torch.tensor(node_features, dtype=torch.float).unsqueeze(1)
+    # Convert to tensor
+    node_features = torch.tensor(node_feature_list, dtype=torch.float).view(-1, 3)
     
-    # Create edge index (connecting each biomarker to heart disease)
-    num_biomarkers = 13  # Number of biomarkers (excluding heart disease node)
+    # Create edge index and weights from knowledge graph
     edge_index = []
-    for i in range(num_biomarkers):
-        edge_index.append([i, num_biomarkers])  # Connect biomarker to heart disease
-        edge_index.append([num_biomarkers, i])  # Connect heart disease to biomarker
+    edge_weight = []
+    
+    for u, v, data in G.edges(data=True):
+        # Add edge in both directions
+        edge_index.append([list(G.nodes()).index(u), list(G.nodes()).index(v)])
+        edge_index.append([list(G.nodes()).index(v), list(G.nodes()).index(u)])
+        
+        # Use correlation as edge weight
+        weight = data['weight']
+        edge_weight.extend([weight, weight])
     
     edge_index = torch.tensor(edge_index, dtype=torch.long).t()
-    
-    # Create edge weights based on heart disease presence
-    edge_weight = torch.ones(edge_index.size(1), dtype=torch.float)
-    if heart_disease_present:
-        edge_weight *= 1.0  # Stronger connections when heart disease is present
-    else:
-        edge_weight *= 0.5  # Weaker connections when heart disease is absent
+    edge_weight = torch.tensor(edge_weight, dtype=torch.float)
     
     return node_features, edge_index, edge_weight
 
